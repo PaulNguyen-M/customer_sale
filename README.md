@@ -1,4 +1,4 @@
-# Dự Án Phân Tích Hiệu Suất Kinh Doanh & Khách Hàng (2016 - 2020)
+# Dự Án Phân Tích Hiệu Suất Kinh Doanh & Khách Hàng
 
 > Dự án tập trung vào việc xử lý dữ liệu giao dịch kinh doanh, xây dựng Dashboard phân tích khách hàng và sản phẩm nhằm hỗ trợ doanh nghiệp theo dõi hiệu suất kinh doanh và ra quyết định dựa trên dữ liệu. 
 
