@@ -1,207 +1,328 @@
-# Dự Án Phân Tích Hiệu Suất Kinh Doanh & Khách Hàng
+# Customer Analytics & Churn Prediction System
 
-> Dự án tập trung vào việc xử lý dữ liệu giao dịch kinh doanh, xây dựng Dashboard phân tích khách hàng và sản phẩm nhằm hỗ trợ doanh nghiệp theo dõi hiệu suất kinh doanh và ra quyết định dựa trên dữ liệu. 
+> Hệ thống phân tích khách hàng, phân nhóm khách hàng và dự đoán churn nhằm hỗ trợ doanh nghiệp theo dõi hành vi khách hàng, tối ưu chiến lược retention và ra quyết định kinh doanh dựa trên dữ liệu.
 
 
 # Tổng Quan Dự Án
 
-Dự án được xây dựng với mục tiêu:
+Dự án được xây dựng nhằm giải quyết các bài toán:
 
 * phân tích hành vi khách hàng
-* đánh giá hiệu suất doanh thu và lợi nhuận
-* theo dõi xu hướng bán hàng theo thời gian
-* trực quan hóa dữ liệu bằng Excel Dashboard
-* hỗ trợ doanh nghiệp đưa ra insight kinh doanh
+* theo dõi hiệu suất kinh doanh
+* phân nhóm khách hàng bằng Machine Learning
+* dự đoán khách hàng có nguy cơ churn
+* hỗ trợ Sales ưu tiên chăm sóc khách hàng
+* trực quan hóa dữ liệu bằng Dashboard
 
-Toàn bộ pipeline được triển khai theo flow thực tế của một DA (Data Analyst):
+Toàn bộ pipeline được triển khai theo flow thực tế của Data Analyst & Machine Learning:
 
-```text id="p4v7n1"
+```text
 Raw Data
 → Data Cleaning
 → Feature Engineering
-→ Pivot Analysis
+→ Customer Segmentation
+→ Churn Prediction
 → Dashboard Visualization
 → Business Insight
+→ Business Recommendation
 ```
+
+
+# Machine Learning Pipeline
+
+## 1. KMeans Clustering
+
+### Mục tiêu
+
+Mô hình KMeans được sử dụng để:
+
+* phân nhóm khách hàng
+* xác định khách hàng VIP
+* phát hiện khách hàng có nguy cơ churn
+* hỗ trợ customer segmentation
+* phục vụ chiến lược marketing
+
+### Feature sử dụng
+
+* Monetary
+* Profit
+* Frequency
+* Customer Lifetime Value (CLV)
+
+### Output
+
+| Cluster   | Ý nghĩa                  |
+| --------- | ------------------------ |
+| Cluster 0 | Khách hàng VIP           |
+| Cluster 1 | Khách hàng tiềm năng     |
+| Cluster 2 | Khách hàng nguy cơ churn |
+| Cluster 3 | Khách hàng mới           |
+
+
+## 2. Logistic Regression
+
+### Mục tiêu
+
+Model Logistic Regression được sử dụng để:
+
+* dự đoán churn customer
+* tính xác suất khách hàng rời bỏ
+* hỗ trợ retention strategy
+* ưu tiên khách hàng cần chăm sóc
+
+### Output
+
+* Churn Probability
+* Risk Level
+* Action Recommendation
+
+### Risk Level
+
+| Risk Level | Ý nghĩa           |
+| ---------- | ----------------- |
+| Thấp       | Khách ổn định     |
+| Trung bình | Cần theo dõi      |
+| Cao        | Có nguy cơ churn  |
+| Khẩn cấp   | Cần chăm sóc ngay |
 
 
 # Công Nghệ & Công Cụ Sử Dụng
 
-| Công nghệ    | Mục đích                  |
-| ------------ | ------------------------- |
-| Python       | Làm sạch và xử lý dữ liệu |
-| Pandas       | Data Processing           |
-| NumPy        | Feature Engineering       |
-| Excel        | Pivot Table & Dashboard   |
-| Excel Charts | Visualization             |
-| GitHub       | Quản lý source code       |
+| Công nghệ    | Mục đích              |
+| ------------ | --------------------- |
+| Python       | Data Processing       |
+| Pandas       | Data Cleaning         |
+| NumPy        | Numerical Processing  |
+| Scikit-learn | Machine Learning      |
+| Matplotlib   | Visualization         |
+| Seaborn      | Data Visualization    |
+| Excel        | Dashboard & Reporting |
+| GitHub       | Source Control        |
 
 
-# Thông Tin Dataset
+# Dataset
 
-Dataset bao gồm dữ liệu giao dịch trong giai đoạn:
+Dataset bao gồm:
 
-```text id="t3z5v8"
-2016 → 2020
-```
-
-Thông tin tổng quan:
-
-* Tổng số khách hàng: `71,179`
-* Tổng doanh thu: `$206.5M`
-* Tổng lợi nhuận: `$31M`
-* Tỷ suất lợi nhuận trung bình: `15%`
-* Tổng số lượng bán: `356,758 sản phẩm`
-
-Các trường dữ liệu chính:
-
+* Customer Name
+* Country
+* City
 * Product Line
 * Revenue
 * Profit
 * Quantity Sold
-* Country
-* Education
+* Customer Lifetime Value
 * Loyalty Status
-* Customer Lifetime Value (CLV)
-* Order Year
-* Gender
+* Coupon Response
 
+### Thông tin tổng quan
 
+* dữ liệu khách hàng
+* dữ liệu giao dịch
+* dữ liệu doanh thu
+* dữ liệu lợi nhuận
+* dữ liệu loyalty
+* dữ liệu hành vi mua hàng
 
 
 # Quy Trình Làm Sạch Dữ Liệu
 
 Dữ liệu gốc được xử lý bằng Python tại file:
 
-```text id="n8q1v4"
+```text
 clean_db.py
 ```
 
-Pipeline xử lý bao gồm:
+## Pipeline xử lý bao gồm:
 
+* remove duplicate
 * xử lý missing values
-* chuẩn hóa định dạng dữ liệu
+* chuẩn hóa dữ liệu
 * convert datatype
-* parse datetime
-* phát hiện outliers
 * feature engineering
-* build analytical dataset
-
-Các bước chính:
-
-1. Xóa dữ liệu rỗng và trùng lặp
-2. Chuẩn hóa dữ liệu text
-3. Chuyển đổi kiểu dữ liệu số và ngày tháng
-4. Tính toán Profit, Profit Margin
-5. Tạo Year / Month phục vụ phân tích
-6. Kiểm tra dữ liệu ngoại lai
+* detect outliers
 
 
+# Feature Engineering
+
+Các feature được xây dựng:
+
+* Monetary
+* Profit
+* Frequency
+* Customer Lifetime Value
+* Churn Probability
+* Risk Level
+
+### Ý nghĩa business
+
+| Feature   | Ý nghĩa                     |
+| --------- | --------------------------- |
+| Monetary  | Tổng giá trị khách hàng     |
+| Profit    | Lợi nhuận tạo ra            |
+| Frequency | Tần suất mua hàng           |
+| CLV       | Giá trị vòng đời khách hàng |
 
 
-# Dashboard Phân Tích
+# Dashboard & Visualization
 
 ## 1. Customer Dashboard
 
-Dashboard tập trung phân tích:
+Dashboard khách hàng hỗ trợ doanh nghiệp theo dõi:
 
-* số lượng khách hàng
-* customer lifetime value
-* doanh thu theo trình độ học vấn
-* phân bố khách hàng theo quốc gia
-* giới tính theo học vấn
-* doanh thu theo loyalty status
+* tổng doanh thu khách hàng
+* customer segmentation
+* churn probability
+* loyalty status
+* doanh thu theo quốc gia
+* CLV theo customer group
+* phân bố khách hàng theo giới tính và học vấn
+
+### Dashboard Path
+
+```text
+./img/customer_dashboard.png
+```
 
 ![Customer Dashboard](./img/customer_dashboard.png)
 
 ### KPI Chính
 
-* Tổng khách hàng: `71,179`
-* Tổng doanh thu: `$206.5M`
-* Tổng lợi nhuận: `$31M`
-* CLV trung bình: `$8,016`
-* Profit Margin: `15%`
+* Tổng khách hàng
+* Tổng doanh thu
+* Tổng lợi nhuận
+* Average CLV
+* Profit Margin
+* Churn Risk Customer
 
+### Giá trị doanh nghiệp
 
+Dashboard giúp doanh nghiệp:
 
+* xác định khách hàng giá trị cao
+* phát hiện khách hàng nguy cơ churn
+* tối ưu retention strategy
+* theo dõi loyalty program
+* tăng customer lifetime value
+* hỗ trợ data-driven decision making
+
+---
 
 ## 2. Product Dashboard
 
-Dashboard tập trung phân tích:
+Dashboard sản phẩm hỗ trợ theo dõi:
 
 * doanh thu theo dòng sản phẩm
 * lợi nhuận theo sản phẩm
-* số lượng bán theo sản phẩm
-* doanh thu theo năm
+* top sản phẩm bán chạy
 * hiệu suất sản phẩm theo thời gian
+* tỷ lệ đóng góp doanh thu
+* phân tích margin theo sản phẩm
+
+### Dashboard Path
+
+```text
+./img/product_dashboard.png
+```
 
 ![Product Dashboard](./img/product_dashboard.png)
 
 ### KPI Chính
 
-* Tổng doanh thu: `$206.5M`
-* Tổng lợi nhuận: `$31M`
-* Tổng số lượng bán: `356,758`
-* CLV trung bình: `$8,016`
-* Profit Margin: `15%`
+* Revenue
+* Profit
+* Quantity Sold
+* Profit Margin
+* Top Product
+* Product Performance
+
+### Giá trị doanh nghiệp
+
+Dashboard giúp doanh nghiệp:
+
+* xác định sản phẩm chiến lược
+* tối ưu marketing campaign
+* tối ưu inventory
+* phát hiện sản phẩm hiệu suất thấp
+* tối ưu doanh thu và lợi nhuận
 
 
+# Business Insight
+
+## 1. Customer Insight
+
+### High Value Customer
+
+* nhóm khách hàng VIP tạo ra phần lớn doanh thu
+* khách hàng loyalty cao có CLV lớn
+* nhóm khách hàng trung thành có tần suất mua ổn định
+
+### Churn Customer
+
+* nhóm churn có frequency thấp
+* churn customer thường có doanh thu thấp
+* nhiều khách hàng churn không tham gia loyalty program
+
+### Business Impact
+
+Nếu không giữ chân nhóm khách hàng churn:
+
+* doanh thu dài hạn sẽ giảm
+* tăng chi phí marketing acquisition
+* giảm customer retention rate
+
+### Strategic Recommendation
+
+* triển khai personalized offer
+* ưu tiên chăm sóc nhóm churn risk cao
+* xây dựng loyalty program nhiều tầng
+* tăng retention cho nhóm CLV cao
 
 
-# Business Insights
+## 2. Product Insight
 
-## 1. Insight Về Dòng Sản Phẩm
+### Revenue Driver
 
-* `TV And Video Gaming` là dòng sản phẩm mang lại doanh thu và lợi nhuận cao nhất.
-* `Computers And Home Office` đứng thứ hai và tăng trưởng mạnh trong giai đoạn làm việc từ xa.
+* một số product line đóng góp phần lớn doanh thu
+* nhóm sản phẩm high-margin ảnh hưởng mạnh đến lợi nhuận
 
-Kết luận:
+### Product Performance
 
-* đây là hai nhóm sản phẩm chiến lược cần được ưu tiên marketing và tồn kho.
+* tồn tại sản phẩm doanh thu cao nhưng margin thấp
+* một số product line giảm hiệu suất theo thời gian
 
+### Strategic Recommendation
 
-## 2. Insight Về Khách Hàng
-
-* Nhóm khách hàng trình độ `Bachelor` tạo ra doanh thu lớn nhất.
-* Khách hàng hạng `Bronze` đóng góp phần lớn dòng tiền cho doanh nghiệp.
-
-Kết luận:
-
-* doanh nghiệp đang phụ thuộc nhiều vào nhóm khách hàng phổ thông thay vì nhóm cao cấp.
+* tập trung marketing cho high-margin products
+* tối ưu cross-selling
+* giảm tồn kho sản phẩm hiệu suất thấp
+* xây dựng combo/bundle sản phẩm
 
 
-## 3. Insight Về Xu Hướng Thị Trường
+# Output Sau Khi Chạy ML
 
-* Giai đoạn `2016 → 2019` tăng trưởng ổn định.
-* Năm `2020` giảm mạnh về số lượng đơn hàng nhưng CLV tăng cao.
+## File Export
 
-Kết luận:
+```text
+customer_segmentation_result.xlsx
+```
 
-* mặc dù lượng khách giảm, doanh nghiệp vẫn giữ được nhóm khách hàng trung thành có giá trị cao.
+### Bao gồm:
 
-
-
-
-# Đề Xuất Hành Động
-
-## Về Sản Phẩm
-
-* tối ưu chuỗi cung ứng cho nhóm TV & Gaming
-* phát triển combo Work From Home
-* đẩy mạnh cross-selling cho Smart Electronics
-
-## Về Khách Hàng
-
-* tập trung marketing vào thị trường Bắc Mỹ
-* xây dựng chương trình loyalty cho nhóm Bronze
-* tăng retention cho nhóm khách hàng CLV cao
-
-
+* Customer
+* Monetary
+* Profit
+* Frequency
+* CLV
+* Cluster
+* Churn Probability
+* Risk Level
+* Action
 
 
 # Cấu Trúc Thư Mục
 
-```text id="m7x2v5"
+```text
 CUSTOMER_SALES/
 │
 ├── db/
@@ -211,75 +332,96 @@ CUSTOMER_SALES/
 │   ├── customer_dashboard.png
 │   └── product_dashboard.png
 │
+├── customer_segmentation_result.xlsx
+│
+├── churn_pipeline_ml.py
 ├── clean_db.py
-├── Cleaned_data.xlsx
+├── requirements.txt
 └── README.md
 ```
 
 
+# requirements.txt
+
+```txt
+pandas==2.2.2
+numpy==1.26.4
+openpyxl==3.1.5
+
+scikit-learn==1.5.1
+xgboost==2.1.1
+
+matplotlib==3.9.2
+seaborn==0.13.2
+```
 
 
 # Hướng Dẫn Chạy Project
 
-## 1. Chạy Pipeline Làm Sạch Dữ Liệu
+## 1. Clone Repository
 
-```bash id="q4x9m2"
+```bash
+git clone <your-repository>
+```
+
+
+## 2. Cài Đặt Thư Viện
+
+```bash
+pip install -r requirements.txt
+```
+
+
+## 3. Chạy Pipeline Làm Sạch Dữ Liệu
+
+```bash
 python clean_db.py
 ```
 
-Output:
+### Output
 
-```text id="z5t1w8"
+```text
 Cleaned_data.xlsx
 ```
 
 
-## 2. Tạo Pivot Table
+## 4. Chạy Machine Learning Pipeline
 
-Trong Excel:
+```bash
+python churn_pipeline_ml.py
+```
 
-* import cleaned dataset
-* build Pivot Table
-* tạo KPI summary
-* tạo aggregation layer
+### Output
 
-
-## 3. Xây Dựng Dashboard
-
-Sử dụng:
-
-* Pivot Chart
-* Slicer
-* KPI Card
-* Excel Visualization
-
-để xây dựng:
-
-* Customer Dashboard
-* Product Dashboard
-
-
-# Output Chính
-
-| File                   | Mục đích             |
-| ---------------------- | -------------------- |
-| DB.xlsx                | dữ liệu gốc          |
-| Cleaned_data.xlsx      | dữ liệu đã clean     |
-| customer_dashboard.png | dashboard khách hàng |
-| product_dashboard.png  | dashboard sản phẩm   |
+```text
+customer_segmentation_result.xlsx
+```
 
 
 # Giá Trị Mang Lại
 
 Hệ thống hỗ trợ:
 
-* phân tích hành vi khách hàng
-* theo dõi hiệu suất kinh doanh
-* hỗ trợ business reporting
-* trực quan hóa dữ liệu
-* hỗ trợ doanh nghiệp ra quyết định dựa trên dữ liệu
+* customer analytics
+* customer segmentation
+* churn prediction
+* retention strategy
+* business reporting
+* dashboard analytics
+* data-driven decision making
 
 
-# Kết Luận
+# Executive Summary
 
-Dự án giúp chuyển đổi dữ liệu giao dịch thô thành hệ thống Dashboard trực quan phục vụ phân tích kinh doanh. Thông qua việc phân tích hiệu suất sản phẩm và hành vi khách hàng, doanh nghiệp có thể xác định các nhóm sản phẩm chiến lược, tối ưu nguồn lực marketing và nâng cao giá trị khách hàng dài hạn. 
+Hệ thống Customer Analytics & Churn Prediction giúp doanh nghiệp chuyển đổi dữ liệu giao dịch thành hệ thống phân tích khách hàng thông minh.
+
+Thông qua Dashboard Analytics và Machine Learning, doanh nghiệp có thể:
+
+* hiểu rõ hành vi khách hàng
+* dự đoán nguy cơ churn
+* tối ưu chiến lược retention
+* tăng customer lifetime value
+* tối ưu doanh thu và lợi nhuận
+* hỗ trợ ra quyết định kinh doanh dựa trên dữ liệu
+
+Dự án được triển khai theo hướng thực tế của một Data Analyst kết hợp Machine Learning Analytics nhằm mô phỏng quy trình phân tích dữ liệu trong doanh nghiệp hiện đại.

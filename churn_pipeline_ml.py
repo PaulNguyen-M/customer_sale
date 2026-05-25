@@ -42,7 +42,7 @@ numeric_cols = [
     'Unit Cost',
     'Revenue',
     'Customer Lifetime Value',
-    'Months As Member',
+    'MonthsAsMember',
 ]
 
 for col in numeric_cols:
@@ -74,7 +74,7 @@ customer_df = df.groupby('Customer Name').agg({
     'Profit': 'sum',
     'Quantity Sold': 'sum',
     'Customer Lifetime Value': 'mean',
-    'Months As Member': 'max'
+    'MonthsAsMember': 'max'
 }).reset_index()
 
 customer_df.columns = [
@@ -97,7 +97,7 @@ print("\n[5] Scaling data...")
 
 features = ['Monetary', 'Profit', 'Frequency', 'CLV', 'Recency']
 scaler = StandardScaler()
-customer_df[features] = scaler.fit_transform(customer_df[features])
+scaled_data = scaler.fit_transform(customer_df[features])
 print(f"    → Data scaling completed successfully")
 
 # ==========================================
@@ -106,7 +106,7 @@ print(f"    → Data scaling completed successfully")
 print("\n[6] Performing KMeans clustering...")
 
 kmeans = KMeans(n_clusters=4, random_state=42)
-customer_df['Cluster'] = kmeans.fit_predict(customer_df[features])
+customer_df['Cluster'] = kmeans.fit_predict(scaled_data)
 print(customer_df.head())
 print(f"    → KMeans clustering completed successfully")
 
@@ -137,9 +137,20 @@ print(f"    → Visualization completed successfully")
 # ==========================================
 
 print("\n[8] Defining churn...")
+# ==========================================
+# DEFINE CHURN
+# ==========================================
+
 customer_df['Churn'] = np.where(
-    (customer_df['Recency'] < 12) & (customer_df['Monetary'] < 5000),
+
+    (
+        (customer_df['Frequency'] <= 2)
+        &
+        (customer_df['Monetary'] < customer_df['Monetary'].median())
+    ),
+
     1,
+
     0
 )
 
@@ -149,13 +160,14 @@ customer_df['Churn'] = np.where(
 
 print("\n[9] Building machine learning model...")
 
-X = customer_df[
+X = customer_df[[
     'Monetary',
     'Profit',
     'Frequency',
     'CLV',
     'Recency'
-]
+]]
+
 
 y = customer_df['Churn']
 
