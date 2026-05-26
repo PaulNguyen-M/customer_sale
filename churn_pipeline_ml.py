@@ -249,7 +249,7 @@ customer_df['Action'] = customer_df.apply(
 print("\n[13] Exporting results...")
 
 customer_df.to_excel(
-    'customer_segmentation_result.xlsx',
+    '/outputs/customer_segmentation_result.xlsx',
     index=False
 )
 
